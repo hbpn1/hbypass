@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H Bypass - Server of Kings</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cairo:wght@400;600;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--gold:#FFB800;--gold2:#FF8C00;--dark:#0a0a0f;--dark2:#0f0f1a;--electric:#00BFFF;--fire:#FF4500;}
+  html,body{background:var(--dark);color:#fff;font-family:'Cairo',sans-serif;overflow-x:hidden;}
+  html[lang="en"]{font-family:'Rajdhani',sans-serif;}
+  html[lang="en"] .ar{display:none!important;}
+  html[lang="ar"] .en{display:none!important;}
+  html[lang="en"]{direction:ltr;}
+  html[lang="ar"]{direction:rtl;}
+
+  #bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+
+  /* NAVBAR */
+  .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:.7rem 2rem;background:rgba(10,10,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid #FFB80022;transition:all .3s;}
+  .navbar.scrolled{background:rgba(10,10,15,0.97);border-bottom-color:#FFB80044;}
+  .nav-logo{font-family:'Cinzel Decorative',serif;font-size:1.1rem;font-weight:900;background:linear-gradient(135deg,#FFB800,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .nav-links{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;}
+  .nav-link{color:#aaa;text-decoration:none;font-size:.9rem;font-weight:600;transition:.2s;padding:.3rem .7rem;border-radius:8px;}
+  .nav-link:hover{color:#fff;background:#ffffff0f;}
+  .nav-price-btn{background:linear-gradient(135deg,#FFB800,#FF8C00);color:#000!important;padding:.45rem 1.2rem!important;border-radius:50px!important;font-weight:700!important;font-size:.9rem;animation:navGlow 2s ease-in-out infinite;}
+  @keyframes navGlow{0%,100%{box-shadow:0 0 10px #FFB80060;}50%{box-shadow:0 0 25px #FFB800aa,0 0 40px #FF8C0055;}}
+  .lang-toggle{display:flex;align-items:center;gap:4px;background:#ffffff0f;border:1px solid #FFB80033;border-radius:50px;padding:3px;cursor:pointer;}
+  .lang-btn{padding:.25rem .7rem;border-radius:50px;font-size:.8rem;font-weight:700;border:none;cursor:pointer;transition:.25s;background:transparent;color:#888;}
+  .lang-btn.active{background:#FFB800;color:#000;}
+
+  /* HERO */
+  .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding-top:80px;}
+  .emblem-wrap{position:relative;width:260px;height:260px;margin:0 auto 2rem;animation:float 4s ease-in-out infinite;}
+  .emblem-img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 30px #FFB80088) drop-shadow(0 0 60px #FF450055);border-radius:50%;}
+  .emblem-ring{position:absolute;inset:-20px;border-radius:50%;border:2px solid transparent;background:conic-gradient(from 0deg,#FFB800,#FF4500,#00BFFF,#FFB800) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;animation:spin 6s linear infinite;}
+  .emblem-ring2{position:absolute;inset:-35px;border-radius:50%;border:1px solid transparent;background:conic-gradient(from 180deg,#00BFFF,#FFB800,#FF4500,#00BFFF) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;animation:spin 10s linear infinite reverse;opacity:.6;}
+  @keyframes float{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-18px) scale(1.03);}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .server-title{font-family:'Cinzel Decorative',serif;font-size:clamp(2.5rem,8vw,5.5rem);font-weight:900;text-align:center;line-height:1.1;background:linear-gradient(135deg,#FFB800 0%,#FF8C00 40%,#FFB800 60%,#fff4c2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px #FFB80066);animation:titlePulse 3s ease-in-out infinite;}
+  .server-sub{font-size:1.2rem;color:#aaa;margin-top:.5rem;letter-spacing:.2em;text-transform:uppercase;font-weight:600;}
+  @keyframes titlePulse{0%,100%{filter:drop-shadow(0 0 20px #FFB80066);}50%{filter:drop-shadow(0 0 40px #FFB800aa);}}
+
+  .tagline{font-size:1.1rem;color:#ccc;margin:1.5rem auto;max-width:550px;text-align:center;line-height:1.8;border:1px solid #FFB80033;border-radius:12px;padding:1rem 1.5rem;background:#FFB8000a;backdrop-filter:blur(10px);}
+
+  .btn-row{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin-top:2rem;}
+  .btn-main{display:inline-flex;align-items:center;gap:.6rem;padding:.9rem 2rem;border-radius:50px;font-family:inherit;font-size:1rem;font-weight:700;text-decoration:none;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+  .btn-discord{background:linear-gradient(135deg,#5865F2,#404EED);color:#fff;border:none;box-shadow:0 0 30px #5865F240;}
+  .btn-discord:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 50px #5865F260;}
+  .btn-gold{background:linear-gradient(135deg,#FFB800,#FF8C00);color:#000;border:none;box-shadow:0 0 30px #FFB80040;}
+  .btn-gold:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 0 50px #FFB80070;}
+  .btn-main::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#ffffff22,transparent);opacity:0;transition:.3s;}
+  .btn-main:hover::before{opacity:1;}
+
+  /* STATS */
+  .stats-bar{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;padding:2rem 1rem;background:linear-gradient(180deg,transparent,#0f0f1a88,transparent);}
+  .stat-item{text-align:center;animation:fadeUp .8s ease forwards;opacity:0;}
+  .stat-item:nth-child(1){animation-delay:.1s;}.stat-item:nth-child(2){animation-delay:.2s;}
+  .stat-num{font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#FFB800,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+  .stat-label{font-size:.85rem;color:#888;letter-spacing:.1em;text-transform:uppercase;}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0);}from{opacity:0;transform:translateY(20px);}}
+
+  /* SECTIONS */
+  .section{padding:4rem 2rem;max-width:1100px;margin:0 auto;position:relative;z-index:1;}
+  .section-title{text-align:center;font-size:2rem;font-weight:900;margin-bottom:3rem;color:#fff;position:relative;}
+  .section-title::after{content:'';display:block;width:80px;height:3px;background:linear-gradient(90deg,#FFB800,#FF4500);margin:.8rem auto 0;border-radius:3px;}
+  .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;}
+  .feat-card{background:linear-gradient(135deg,#0f0f1a,#1a1a2e);border:1px solid #FFB80022;border-radius:16px;padding:1.8rem;transition:all .4s;position:relative;overflow:hidden;cursor:default;}
+  .feat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#FFB80008,transparent,#00BFFF08);opacity:0;transition:.4s;}
+  .feat-card:hover{transform:translateY(-8px);border-color:#FFB80066;box-shadow:0 20px 40px #FFB80022;}
+  .feat-card:hover::before{opacity:1;}
+  .feat-icon{font-size:2.5rem;margin-bottom:1rem;display:block;}
+  .feat-title{font-size:1.1rem;font-weight:700;color:#FFB800;margin-bottom:.5rem;}
+  .feat-desc{font-size:.9rem;color:#888;line-height:1.7;}
+
+  /* WWCD */
+  .wwcd-section{background:linear-gradient(135deg,#0a0a1f,#1a0a00);border-top:1px solid #FF450022;border-bottom:1px solid #FF450022;padding:4rem 2rem;position:relative;z-index:1;overflow:hidden;}
+  .wwcd-inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem;}
+  .wwcd-badge{background:linear-gradient(135deg,#FF4500,#FF8C00);color:#fff;padding:.4rem 1.2rem;border-radius:50px;font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+  .wwcd-title{font-size:2rem;font-weight:900;color:#fff;}
+  .wwcd-desc{color:#aaa;line-height:1.8;max-width:600px;}
+
+  /* PRICING */
+  .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:750px;margin:0 auto;}
+  .price-card{background:linear-gradient(135deg,#0f0f1a,#1a1a2e);border:1px solid #FFB80033;border-radius:20px;padding:2rem 1.8rem;position:relative;transition:all .4s;text-align:center;}
+  .price-card:hover{transform:translateY(-8px);box-shadow:0 20px 50px #FFB80030;}
+  .price-featured{border:2px solid #FFB800;box-shadow:0 0 40px #FFB80030;}
+  .price-badge{display:inline-block;background:#FFB80022;color:#FFB800;border:1px solid #FFB80055;border-radius:50px;padding:.3rem 1rem;font-size:.8rem;font-weight:700;margin-bottom:1rem;}
+  .price-badge-fire{background:#FF450022;color:#FF8C00;border-color:#FF450055;}
+  .price-icon{font-size:2.8rem;margin-bottom:.5rem;}
+  .price-name{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.5rem;}
+  .price-amount{font-size:3.2rem;font-weight:900;background:linear-gradient(135deg,#FFB800,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+  .price-egp{font-size:2.5rem;font-weight:900;color:#FFB800;}
+  .price-divider{width:60px;height:2px;background:linear-gradient(90deg,transparent,#FFB800,transparent);margin:1.2rem auto;}
+  .price-features{list-style:none;display:flex;flex-direction:column;gap:.6rem;}
+  html[lang="ar"] .price-features{text-align:right;}
+  html[lang="en"] .price-features{text-align:left;}
+  .price-features li{font-size:.95rem;color:#ccc;}
+  .trust-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem;}
+  .trust-item{display:flex;flex-direction:column;align-items:center;gap:.4rem;font-size:.85rem;color:#888;background:#ffffff08;border:1px solid #ffffff11;border-radius:12px;padding:.8rem 1.2rem;min-width:90px;}
+  .trust-item span:first-child{font-size:1.6rem;}
+
+  /* FOOTER */
+  footer{padding:3rem 2rem;text-align:center;position:relative;z-index:1;border-top:1px solid #FFB80011;}
+  footer .logo-small{font-family:'Cinzel Decorative',serif;font-size:1.5rem;color:#FFB800;margin-bottom:.5rem;}
+  footer p{color:#555;font-size:.85rem;}
+
+  .spark{position:fixed;pointer-events:none;z-index:999;animation:sparkAnim .6s ease-out forwards;}
+  @keyframes sparkAnim{0%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0) translateY(-30px);}}
+  .reveal{opacity:0;transform:translateY(30px);transition:all .7s ease;}
+  .reveal.visible{opacity:1;transform:none;}
+  .particle{position:fixed;pointer-events:none;border-radius:50%;z-index:0;}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-logo">H BYPASS</div>
+  <div class="nav-links">
+    <a class="nav-link" href="#" onclick="scrollTo({top:0,behavior:'smooth'});return false;">
+      <span class="ar">🏠 الرئيسية</span><span class="en">🏠 Home</span>
+    </a>
+    <a class="nav-link" href="#pricing" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'});return false;">
+      <span class="ar">💰 الأسعار</span><span class="en">💰 Pricing</span>
+    </a>
+    <a class="nav-link nav-price-btn" href="https://discord.gg/xam4Uj3awK" target="_blank">
+      <span class="ar">👑 انضم للسيرفر</span><span class="en">👑 Join Server</span>
+    </a>
+    <!-- Language Toggle -->
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-ar" onclick="setLang('ar')">ع</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="emblem-wrap">
+    <div class="emblem-ring"></div>
+    <div class="emblem-ring2"></div>
+    <img class="emblem-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' fill='%230a0a0f' stroke='%23FFB800' stroke-width='3'/%3E%3Ctext x='100' y='125' text-anchor='middle' font-size='80' font-weight='900' fill='%23FFB800' font-family='serif'%3EH%3C/text%3E%3C/svg%3E" alt="H Logo">
+  </div>
+  <h1 class="server-title">H BYPASS</h1>
+  <p class="server-sub">
+    <span class="ar">سيرفر الملوك</span>
+    <span class="en">Server of Kings</span>
+  </p>
+  <p class="tagline">
+    <span class="ar">⚡ مرحباً بك في سيرفر H Bypass — المكان الأقوى لبيباس جيم لوب ⚡</span>
+    <span class="en">⚡ Welcome to H Bypass — The strongest place for Game Loop bypass ⚡</span>
+  </p>
+  <div class="btn-row">
+    <a class="btn-main btn-discord" href="https://discord.gg/xam4Uj3awK" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.081.116 18.105.133 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      <span class="ar">انضم للسيرفر الأساسي</span>
+      <span class="en">Join Main Server</span>
+    </a>
+    <a class="btn-main btn-gold" href="https://discord.gg/r36YEyn8Kq" target="_blank">
+      🏆 <span class="ar">سيرفر صور WWCD</span><span class="en">WWCD Screenshots Server</span>
+    </a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar reveal">
+  <div class="stat-item">
+    <div class="stat-num">24/7</div>
+    <div class="stat-label"><span class="ar">دعم مستمر</span><span class="en">Support</span></div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">👑</div>
+    <div class="stat-label"><span class="ar">ملوك فقط</span><span class="en">Kings Only</span></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section reveal">
+  <h2 class="section-title">
+    <span class="ar">إيه اللي بيقدمه السيرفر؟</span>
+    <span class="en">What does the server offer?</span>
+  </h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <span class="feat-icon">⚡</span>
+      <div class="feat-title"><span class="ar">بيباس جيم لوب حصري</span><span class="en">Exclusive Game Loop Bypass</span></div>
+      <div class="feat-desc"><span class="ar">أقوى وأحدث بيباس جيم لوب اللي مش هتلاقيه في أي مكان تاني</span><span class="en">The strongest and latest bypass you won't find anywhere else</span></div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🛠️</span>
+      <div class="feat-title"><span class="ar">بيباس جيم لوب متقدم</span><span class="en">Advanced Game Loop Bypass</span></div>
+      <div class="feat-desc"><span class="ar">مجموعة ضخمة من بيباس جيم لوب والسكريبتات اللي تسهّل عليك كل حاجة</span><span class="en">A huge collection of bypasses and scripts to make everything easier</span></div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">👑</span>
+      <div class="feat-title"><span class="ar">كومينتي الملوك</span><span class="en">Kings Community</span></div>
+      <div class="feat-desc"><span class="ar">ناس بتساعد بعض وتتشارك كل جديد بشكل يومي</span><span class="en">People helping each other and sharing everything new daily</span></div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🏆</span>
+      <div class="feat-title"><span class="ar">صور WWCD</span><span class="en">WWCD Screenshots</span></div>
+      <div class="feat-desc"><span class="ar">سيرفر مخصص لأجمد صور الـ WWCD والإنجازات</span><span class="en">A dedicated server for the best WWCD moments and achievements</span></div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🔔</span>
+      <div class="feat-title"><span class="ar">آبديتات لحظية</span><span class="en">Instant Updates</span></div>
+      <div class="feat-desc"><span class="ar">أول ما يطلع أي جديد هتلاقيه عندنا قبل أي حد</span><span class="en">As soon as anything new drops, you'll find it here first</span></div>
+    </div>
+    <div class="feat-card">
+      <span class="feat-icon">🎮</span>
+      <div class="feat-title"><span class="ar">محتوى ترفيهي</span><span class="en">Entertainment Content</span></div>
+      <div class="feat-desc"><span class="ar">مسابقات، هدايا، وكل حاجة بتخلي الوقت ممتع</span><span class="en">Competitions, giveaways, and everything that makes it fun</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WWCD SECTION -->
+<div class="wwcd-section reveal">
+  <div class="wwcd-inner">
+    <span class="wwcd-badge"><span class="ar">🔥 جديد</span><span class="en">🔥 New</span></span>
+    <div class="wwcd-title"><span class="ar">سيرفر صور WWCD</span><span class="en">WWCD Screenshots Server</span></div>
+    <div class="wwcd-desc">
+      <span class="ar">سيرفر مخصص لأحلى وأقوى صور الـ Winner Winner Chicken Dinner — شارك إنجازاتك واتفرج على أقوى اللحظات</span>
+      <span class="en">A server dedicated to the best Winner Winner Chicken Dinner moments — share your achievements and watch the best highlights</span>
+    </div>
+    <a class="btn-main btn-gold" href="https://discord.gg/r36YEyn8Kq" target="_blank" style="margin-top:1rem;">
+      🏆 <span class="ar">اكتشف السيرفر</span><span class="en">Explore the Server</span>
+    </a>
+  </div>
+</div>
+
+<!-- BOTTOM CTA -->
+<section class="section reveal" style="text-align:center;padding-bottom:5rem;">
+  <h2 class="section-title">
+    <span class="ar">مستنيك بيننا 👑</span>
+    <span class="en">We're waiting for you 👑</span>
+  </h2>
+  <p style="color:#aaa;margin-bottom:2rem;font-size:1.05rem;line-height:1.8;">
+    <span class="ar">ما تستناش أكتر من كده، انضم دلوقتي وكن جزء من عيلة الملوك</span>
+    <span class="en">Don't wait any longer — join now and become part of the Kings family</span>
+  </p>
+  <a class="btn-main btn-discord" href="https://discord.gg/xam4Uj3awK" target="_blank" style="font-size:1.2rem;padding:1.1rem 2.5rem;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.081.116 18.105.133 18.12a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+    <span class="ar">انضم دلوقتي — مجاني 100%</span>
+    <span class="en">Join Now — 100% Free</span>
+  </a>
+</section>
+
+<!-- PRICING -->
+<section class="section reveal" id="pricing">
+  <h2 class="section-title">
+    <span class="ar">💰 أسعار بيباس جيم لوب</span>
+    <span class="en">💰 Game Loop Bypass Pricing</span>
+  </h2>
+  <div style="display:flex;justify-content:center;gap:.5rem;margin-bottom:2.5rem;">
+    <button onclick="setCurrency('usd')" id="btn-usd" style="padding:.5rem 1.4rem;border-radius:50px;border:2px solid #FFB800;background:#FFB800;color:#000;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;transition:.3s;">$ <span class="ar">دولار</span><span class="en">USD</span></button>
+    <button onclick="setCurrency('egp')" id="btn-egp" style="padding:.5rem 1.4rem;border-radius:50px;border:2px solid #FFB80055;background:transparent;color:#FFB800;font-family:inherit;font-weight:700;font-size:.95rem;cursor:pointer;transition:.3s;">🇪🇬 <span class="ar">جنيه</span><span class="en">EGP</span></button>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-badge"><span class="ar">الأسرع مبيعاً</span><span class="en">Best Seller</span></div>
+      <div class="price-icon">📅</div>
+      <div class="price-name"><span class="ar">أسبوع</span><span class="en">1 Week</span></div>
+      <div class="price-amount" id="price-week">10$</div>
+      <div class="price-egp" id="egp-week" style="display:none;"><span class="ar">250 جنيه</span><span class="en">250 EGP</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>✅ <span class="ar">كود بيباس جيم لوب أسبوعي</span><span class="en">Weekly Game Loop Bypass code</span></li>
+        <li>✅ <span class="ar">تسليم فوري</span><span class="en">Instant delivery</span></li>
+        <li>✅ <span class="ar">دعم 24/7</span><span class="en">24/7 support</span></li>
+        <li>✅ <span class="ar">جودة مضمونة 100%</span><span class="en">100% guaranteed quality</span></li>
+      </ul>
+      <a class="btn-main btn-gold" href="https://discord.gg/xam4Uj3awK" target="_blank" style="width:100%;justify-content:center;margin-top:1.5rem;">
+        🛒 <span class="ar">اشتري دلوقتي</span><span class="en">Buy Now</span>
+      </a>
+    </div>
+    <div class="price-card price-featured">
+      <div class="price-badge price-badge-fire">🔥 <span class="ar">الأوفر</span><span class="en">Best Value</span></div>
+      <div class="price-icon">👑</div>
+      <div class="price-name"><span class="ar">شهر كامل</span><span class="en">Full Month</span></div>
+      <div class="price-amount" id="price-month">20$</div>
+      <div class="price-egp" id="egp-month" style="display:none;"><span class="ar">700 جنيه</span><span class="en">700 EGP</span></div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li>✅ <span class="ar">كود بيباس جيم لوب شهري</span><span class="en">Monthly Game Loop Bypass code</span></li>
+        <li>✅ <span class="ar">تسليم فوري</span><span class="en">Instant delivery</span></li>
+        <li>✅ <span class="ar">دعم 24/7</span><span class="en">24/7 support</span></li>
+        <li>✅ <span class="ar">جودة مضمونة 100%</span><span class="en">100% guaranteed quality</span></li>
+        <li>✅ <span class="ar">توفير أكتر من الأسبوعي</span><span class="en">Save more than weekly plan</span></li>
+      </ul>
+      <a class="btn-main btn-gold" href="https://discord.gg/xam4Uj3awK" target="_blank" style="width:100%;justify-content:center;margin-top:1.5rem;">
+        🛒 <span class="ar">اشتري دلوقتي</span><span class="en">Buy Now</span>
+      </a>
+    </div>
+  </div>
+  <div class="trust-row">
+    <div class="trust-item"><span>🛡️</span><span><span class="ar">آمن 100%</span><span class="en">100% Safe</span></span></div>
+    <div class="trust-item"><span>⚡</span><span><span class="ar">تسليم فوري</span><span class="en">Instant</span></span></div>
+    <div class="trust-item"><span>🎧</span><span><span class="ar">دعم 24/7</span><span class="en">24/7 Support</span></span></div>
+    <div class="trust-item"><span>⭐</span><span><span class="ar">جودة مضمونة</span><span class="en">Guaranteed</span></span></div>
+  </div>
+  <p style="text-align:center;color:#FFB800;font-weight:700;font-size:1.1rem;margin-top:2rem;">
+    <span class="ar">أقوى سعر .. أقوى خدمة .. طور لعبك الآن! 🎮</span>
+    <span class="en">Best price .. Best service .. Level up your game now! 🎮</span>
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-small">H BYPASS</div>
+  <p>
+    <span class="ar">© 2025 H Bypass Server — كل الحقوق محفوظة للملوك</span>
+    <span class="en">© 2025 H Bypass Server — All rights reserved for the Kings</span>
+  </p>
+</footer>
+
+<script>
+const canvas=document.getElementById('bg-canvas');
+const ctx=canvas.getContext('2d');
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+
+class LightningBolt{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*innerWidth;this.y=0;this.life=0;this.maxLife=40+Math.random()*40;this.segs=[];this.alpha=0;let cx=this.x,cy=0;for(let i=0;i<12;i++){const nx=cx+(Math.random()-.5)*120;const ny=cy+innerHeight/12;this.segs.push({x1:cx,y1:cy,x2:nx,y2:ny});cx=nx;cy=ny;}this.color=Math.random()<.5?'#00BFFF':'#FFB800';}
+  update(){this.life++;if(this.life<10)this.alpha=this.life/10;else this.alpha=1-(this.life-10)/(this.maxLife-10);if(this.life>=this.maxLife)this.reset();}
+  draw(){ctx.save();ctx.globalAlpha=this.alpha*.4;ctx.strokeStyle=this.color;ctx.lineWidth=1;ctx.shadowColor=this.color;ctx.shadowBlur=8;ctx.beginPath();this.segs.forEach((s,i)=>{if(i===0)ctx.moveTo(s.x1,s.y1);ctx.lineTo(s.x2,s.y2);});ctx.stroke();ctx.restore();}
+}
+class Ember{
+  constructor(){this.reset();}
+  reset(){this.x=Math.random()*innerWidth;this.y=innerHeight+10;this.vy=-(0.5+Math.random()*1.5);this.vx=(Math.random()-.5)*.5;this.size=1+Math.random()*3;this.alpha=Math.random();this.color=Math.random()<.5?'#FFB800':'#FF4500';}
+  update(){this.x+=this.vx;this.y+=this.vy;this.alpha-=.003;if(this.alpha<=0||this.y<-10)this.reset();}
+  draw(){ctx.save();ctx.globalAlpha=this.alpha;ctx.fillStyle=this.color;ctx.shadowColor=this.color;ctx.shadowBlur=6;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();ctx.restore();}
+}
+const bolts=Array.from({length:4},()=>new LightningBolt());
+bolts.forEach(b=>{b.life=Math.floor(Math.random()*b.maxLife);});
+const embers=Array.from({length:80},()=>new Ember());
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);embers.forEach(e=>{e.update();e.draw();});bolts.forEach(b=>{b.update();b.draw();});requestAnimationFrame(animate);}
+animate();
+
+const revealEls=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.15});
+revealEls.forEach(el=>io.observe(el));
+
+document.addEventListener('click',e=>{
+  for(let i=0;i<6;i++){const spark=document.createElement('div');spark.className='spark';spark.style.cssText=`left:${e.clientX-6}px;top:${e.clientY-6}px;width:12px;height:12px;background:radial-gradient(circle,#FFB800,#FF4500);border-radius:50%;transform:translate(${(Math.random()-.5)*60}px,${(Math.random()-.5)*60}px) scale(${Math.random()*2});`;document.body.appendChild(spark);setTimeout(()=>spark.remove(),700);}
+});
+
+function setCurrency(c){
+  const isEgp=c==='egp';
+  document.getElementById('price-week').style.display=isEgp?'none':'block';
+  document.getElementById('price-month').style.display=isEgp?'none':'block';
+  document.getElementById('egp-week').style.display=isEgp?'block':'none';
+  document.getElementById('egp-month').style.display=isEgp?'block':'none';
+  document.getElementById('btn-usd').style.background=isEgp?'transparent':'#FFB800';
+  document.getElementById('btn-usd').style.color=isEgp?'#FFB800':'#000';
+  document.getElementById('btn-egp').style.background=isEgp?'#FFB800':'transparent';
+  document.getElementById('btn-egp').style.color=isEgp?'#000':'#FFB800';
+}
+
+function setLang(lang){
+  const html=document.getElementById('html-root');
+  html.setAttribute('lang',lang);
+  html.setAttribute('dir',lang==='ar'?'rtl':'ltr');
+  document.getElementById('btn-ar').classList.toggle('active',lang==='ar');
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('navbar').classList.toggle('scrolled',scrollY>60);
+});
+</script>
+</body>
+</html>
